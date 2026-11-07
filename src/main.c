@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 
 #include "args.h"
+#include "web.h"
 
 // for arguments
 #define ARG_VALUE 1
@@ -19,6 +20,7 @@ enum {
 	ARG_HELP,
 	ARG_IPV,
 	ARG_PORT,
+	ARG_DIR,
 };
 
 int main(int argc, char **argv) {
@@ -28,6 +30,7 @@ int main(int argc, char **argv) {
 	args_add_argument("-4", "--ipv4", &args[ARG_TRASH], ARG_BOOL);
 	args_add_argument("-6", "--ipv6", &args[ARG_IPV], ARG_BOOL);
 	args_add_argument("-p", "--port", &args[ARG_PORT], ARG_VALUE);
+	args_add_argument("-d", "--directory", &args[ARG_DIR], ARG_VALUE);
 	args_check_arguments(argc, argv);
 
 	if (args[ARG_PORT])
