@@ -23,7 +23,7 @@ enum {
 
 int main(int argc, char **argv) {
 	char *args[64] = {0};
-	int port = htons(8080);
+	int port = 8080;
 	args_add_argument("-h", "--help", &args[ARG_HELP], ARG_BOOL);
 	args_add_argument("-4", "--ipv4", &args[ARG_TRASH], ARG_BOOL);
 	args_add_argument("-6", "--ipv6", &args[ARG_IPV], ARG_BOOL);
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 	args_check_arguments(argc, argv);
 
 	if (args[ARG_PORT])
-		port = htons(atoi(args[ARG_PORT]));
+		port = atoi(args[ARG_PORT]);
 	if (args[ARG_HELP]) {
 		printf("Usage:\n"
 		       "\t-6/4 --ipv6/4 # IPv6 and IPv4\n"
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 		       "\t-d --directory [DIRECTORY] # gets contents from directory\n");
 		exit(0);
 	}
-	printf("Using port: %d\n", ntohs(port));
+	printf("Using port: %d\n", port);
 
 	
 
