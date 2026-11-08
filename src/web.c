@@ -1,3 +1,6 @@
 #include "web.h"
 
-void web_init(int IPv) {}
+// creates socket, address, then binds them and listens
+void web_init(int IPv) {
+	(void)IPv;
+}

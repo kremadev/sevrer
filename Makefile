@@ -1,7 +1,7 @@
 FLAGS=-Wall -Wextra -Werror
 .PHONY: clean
 
-build/sevrer: build/main.o build/args.o builds/web.o
+build/sevrer: build/main.o build/args.o build/web.o
 	mkdir -p build
 	gcc $(FLAGS) $^ -o $@
 
