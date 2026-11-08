@@ -5,9 +5,9 @@ build/sevrer: build/main.o build/args.o build/web.o
 	mkdir -p build
 	gcc $(FLAGS) $^ -o $@
 
-build/main.o: src/main.c
+build/main.o: src/main.c src/args.h src/web.h
 	mkdir -p build
-	gcc $(FLAGS) -c $^ -o $@
+	gcc $(FLAGS) -c $< -o $@
 
 build/args.o: src/args.c src/args.h
 	mkdir -p build
