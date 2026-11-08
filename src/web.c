@@ -1,9 +1,10 @@
 #include "web.h"
+#include "ssl.h"
 
 static int sockfd;
 
 // create socket, address, than bind and listen
-void web_init(char *IPv, int port) {
+void web_init(char *IPv, int port, char *cert, char *key) {
 	int opt = 1;
 	if (!IPv) {
 		sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -40,17 +41,27 @@ void web_init(char *IPv, int port) {
 		perror("listen");
 		exit(1);
 	}
+	signal(SIGCHLD, SIG_IGN);
+	ssl_init(cert, key);
 }
 
 void web_loop(void) {
 	int client = accept(sockfd, NULL, NULL);
+	if (client < 0) {
+		perror("accept");
+		return;
+	}
 	int client_process = fork();
-	if (!client_process) {
+	if (client_process == 0) {
 		close(sockfd);
-		char buffer[2048];
-		read(client, buffer, 2047);
-		char *response = "HTTP/1.1 200 OK\r\nContent-Type: plain/text; charset=UTF-8\r\nContent-Length: 7\r\n\r\nHello!\n";
-		write(client, response, strlen(response));
+		SSL *ssl = ssl_client(client);
+		if (ssl) {
+			char buffer[2048];
+			ssl_read(ssl, buffer, 2047);
+			char *response = "HTTP/1.1 200 OK\r\nContent-Type: plain/text; charset=UTF-8\r\nContent-Length: 7\r\n\r\nHello!\n";
+			ssl_write(ssl, response, strlen(response));
+			ssl_close(ssl);
+		}
 		close(client);
 		_exit(0);
 	}

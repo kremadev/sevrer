@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-void web_init(char *IPv, int port);
+void web_init(char *IPv, int port, char *cert, char *key);
 void web_loop(void);
 
 #endif

@@ -11,6 +11,7 @@ enum {
 	ARG_IPV,
 	ARG_PORT,
 	ARG_DIR,
+	ARG_CERT,
 };
 
 int main(int argc, char **argv) {
@@ -21,6 +22,7 @@ int main(int argc, char **argv) {
 	args_add_argument("-6", "--ipv6", &args[ARG_IPV], ARG_BOOL);
 	args_add_argument("-p", "--port", &args[ARG_PORT], ARG_VALUE);
 	args_add_argument("-d", "--directory", &args[ARG_DIR], ARG_VALUE);
+	args_add_argument("-C", "--certificate", &args[ARG_CERT], ARG_VALUE);
 	args_check_arguments(argc, argv);
 	if (args[ARG_PORT])
 		port = atoi(args[ARG_PORT]);
@@ -29,12 +31,23 @@ int main(int argc, char **argv) {
 		       "\t-6/4 --ipv6/4 # IPv6 and IPv4\n"
 		       "\t-p --port [PORT] # for custom port\n"
 		       "\t-h --help # prints this menu\n"
-		       "\t-d --directory [DIRECTORY] # gets contents from directory\n");
+		       "\t-d --directory [DIRECTORY] # gets contents from directory\n"
+		       "\t-C --certificate [CERT],[KEY] # uses cert as certificate file and key as key file\n");
 		exit(0);
 	}
 	
 	printf("Using port: %d\n", port);
-	web_init(args[ARG_IPV], port);
+
+	char *cert = args[ARG_CERT];
+	char *key = cert ? strstr(cert, ",") : NULL;
+	if (key == NULL) {
+		printf("Invalid or missing certificate (-C CERT,KEY). Use -h for --help.\n");
+		exit(1);
+	}
+	*key = '\0';
+	key++;
+
+	web_init(args[ARG_IPV], port, cert, key);
 	for (;;) web_loop();
 
 	return 0;
