@@ -1,5 +1,6 @@
 #include "web.h"
 #include "ssl.h"
+#include "file.h"
 
 static int sockfd;
 
@@ -56,10 +57,27 @@ void web_loop(void) {
 		close(sockfd);
 		SSL *ssl = ssl_client(client);
 		if (ssl) {
-			char buffer[2048];
-			ssl_read(ssl, buffer, 2047);
-			char *response = "HTTP/1.1 200 OK\r\nContent-Type: plain/text; charset=UTF-8\r\nContent-Length: 7\r\n\r\nHello!\n";
-			ssl_write(ssl, response, strlen(response));
+			char buffer[4096];
+			int n = ssl_read(ssl, buffer, sizeof(buffer) - 1);
+			if (n > 0) {
+				buffer[n] = '\0';
+				int size = 0;
+				char *page = NULL;
+				char *end_of_path = NULL;
+				if (!strncmp(buffer, "GET ", 4))
+					end_of_path = strchr(buffer + 4, ' ');
+				if (end_of_path) {
+					*end_of_path = '\0';
+					page = get_file_content(buffer + 4, &size);
+				} else {
+					const char *bad = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+					ssl_write(ssl, bad, strlen(bad));
+				}
+				if (page) {
+					ssl_write(ssl, page, size);
+					free(page);
+				}
+			}
 			ssl_close(ssl);
 		}
 		close(client);

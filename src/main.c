@@ -1,5 +1,6 @@
 #include "args.h"
 #include "web.h"
+#include "file.h"
 
 // for arguments
 #define ARG_VALUE 1
@@ -36,6 +37,9 @@ int main(int argc, char **argv) {
 		exit(0);
 	}
 	
+	if (args[ARG_DIR])
+		file_set_root(args[ARG_DIR]);
+
 	printf("Using port: %d\n", port);
 
 	char *cert = args[ARG_CERT];
