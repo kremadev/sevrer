@@ -1,13 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <errno.h>
-#include <signal.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
 #include "args.h"
 #include "web.h"
 
@@ -32,7 +22,6 @@ int main(int argc, char **argv) {
 	args_add_argument("-p", "--port", &args[ARG_PORT], ARG_VALUE);
 	args_add_argument("-d", "--directory", &args[ARG_DIR], ARG_VALUE);
 	args_check_arguments(argc, argv);
-
 	if (args[ARG_PORT])
 		port = atoi(args[ARG_PORT]);
 	if (args[ARG_HELP]) {
@@ -43,9 +32,10 @@ int main(int argc, char **argv) {
 		       "\t-d --directory [DIRECTORY] # gets contents from directory\n");
 		exit(0);
 	}
-	printf("Using port: %d\n", port);
-
 	
+	printf("Using port: %d\n", port);
+	web_init(args[ARG_IPV], port);
+	for (;;) web_loop();
 
 	return 0;
 }
